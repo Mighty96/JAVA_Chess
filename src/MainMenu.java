@@ -14,6 +14,9 @@ public class MainMenu extends JFrame {
     private int mouseX, mouseY;
     private int mouseXOnBoard, mouseYOnBoard;
     private int turnPlayer;
+    private int deadBlack, deadWhite;
+    private int promX, promY;
+
     private Piece nullPiece = new Piece(0,0,"",0, 0);
     private Piece[][] board = new Piece[][]
         {{nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece},
@@ -43,6 +46,7 @@ public class MainMenu extends JFrame {
     private JLabel lostPiece = new JLabel(new ImageIcon(Main.class.getResource("./img/lost.png")));
     private JLabel white_lost = new JLabel(new ImageIcon(Main.class.getResource("./img/white_lost.png")));
     private JLabel black_lost = new JLabel(new ImageIcon(Main.class.getResource("./img/black_lost.png")));
+    private JLabel promotion = new JLabel(new ImageIcon(Main.class.getResource("./img/promotion2.png")));
 
     private JTextArea p1 = new JTextArea("Player 1");
     private JTextArea p2 = new JTextArea("Player 2");
@@ -68,6 +72,8 @@ public class MainMenu extends JFrame {
 
     private JButton[] p1bt = new JButton[16];
     private JButton[] p2bt = new JButton[16];
+    private JButton[] p1prom = new JButton[4];
+    private JButton[] p2prom = new JButton[4];
 
     Player player1;
     Player player2;
@@ -90,6 +96,7 @@ public class MainMenu extends JFrame {
                 mouseX = e.getX();
                 mouseY = e.getY();
             }
+
         });
         menuBar.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -100,6 +107,105 @@ public class MainMenu extends JFrame {
             }
         });
         add(menuBar);
+
+
+
+        p1prom[0] = new JButton(blackQueenImage);
+        p1prom[1] = new JButton(blackKnightImage);
+        p1prom[2] = new JButton(blackBishopImage);
+        p1prom[3] = new JButton(blackRookImage);
+        p2prom[0] = new JButton(whiteQueenImage);
+        p2prom[1] = new JButton(whiteKnightImage);
+        p2prom[2] = new JButton(whiteBishopImage);
+        p2prom[3] = new JButton(whiteRookImage);
+
+        for (int i = 0 ; i < 4 ; i++)
+        {
+            p1prom[i].setBounds(800 + 100 * i, 350, 75, 75);
+            p2prom[i].setBounds(800 + 100 * i, 350, 75, 75);
+            p1prom[i].setVisible(false);
+            p2prom[i].setVisible(false);
+            p1prom[i].setBorderPainted(false);
+            p1prom[i].setContentAreaFilled(false);
+            p1prom[i].setFocusPainted(false);
+            p2prom[i].setBorderPainted(false);
+            p2prom[i].setContentAreaFilled(false);
+            p2prom[i].setFocusPainted(false);
+            add(p1prom[i]);
+            add(p2prom[i]);
+            p1prom[i].addNotify();
+            p2prom[i].addNotify();
+            final int temp = i;
+            p1prom[i].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    changeTurn(2);
+                    promotion.setVisible(false);
+                    for (int j = 0 ; j < 4 ; j++)
+                        p1prom[j].setVisible(false);
+                    if (temp == 0) {
+                        board[promY][promX].setName("Queen");
+                        p1bt[board[promY][promX].getNo()].setIcon(blackQueenImage);
+                    } else if (temp == 1) {
+                        board[promY][promX].setName("Knight");
+                        p1bt[board[promY][promX].getNo()].setIcon(blackKnightImage);
+                    } else if (temp == 2) {
+                        board[promY][promX].setName("Bishop");
+                        p1bt[board[promY][promX].getNo()].setIcon(blackBishopImage);
+                    } else if (temp == 3) {
+                        board[promY][promX].setName("Rook");
+                        p1bt[board[promY][promX].getNo()].setIcon(blackRookImage);
+                    }
+                }
+
+               @Override
+               public void mouseEntered(MouseEvent e) {
+                   p1prom[temp].setCursor(new Cursor(Cursor.HAND_CURSOR));
+               }
+
+               @Override
+               public void mouseExited(MouseEvent e) {
+                   p1prom[temp].setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+               }
+            });
+
+            p2prom[i].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    changeTurn(1);
+                    promotion.setVisible(false);
+                    for (int j = 0 ; j < 4 ; j++)
+                        p2prom[j].setVisible(false);
+                    if (temp == 0) {
+                        board[promY][promX].setName("Queen");
+                        p2bt[board[promY][promX].getNo()].setIcon(whiteQueenImage);
+                    } else if (temp == 1) {
+                        board[promY][promX].setName("Knight");
+                        p2bt[board[promY][promX].getNo()].setIcon(whiteKnightImage);
+                    } else if (temp == 2) {
+                        board[promY][promX].setName("Bishop");
+                        p2bt[board[promY][promX].getNo()].setIcon(whiteBishopImage);
+                    } else if (temp == 3) {
+                        board[promY][promX].setName("Rook");
+                        p2bt[board[promY][promX].getNo()].setIcon(whiteRookImage);
+                    }
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    p2prom[temp].setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    p2prom[temp].setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
+        }
+
+        promotion.setBounds(0, 0, 1280, 720);
+        promotion.setVisible(false);
+        add(promotion);
 
         boardLabel.setBounds(50, 60, 600, 600);
         boardLabel.setVisible(false);
@@ -126,6 +232,8 @@ public class MainMenu extends JFrame {
         white_lost.setBounds(670, 400, 600, 150);
         white_lost.setVisible(false);
         add(white_lost);
+
+
 
         p1.setBounds(800, 100, 300, 80);
         p2.setBounds(800, 200, 300, 80);
@@ -339,14 +447,17 @@ public class MainMenu extends JFrame {
                         }
                         if (board[mouseYOnBoard][mouseXOnBoard].getTurn() == 2) {
                             board[mouseYOnBoard][mouseXOnBoard].setLife(false);
-                            p2bt[board[mouseYOnBoard][mouseXOnBoard].getNo()].setVisible(false);
+                            p2bt[board[mouseYOnBoard][mouseXOnBoard].getNo()].setBounds(670 + (deadWhite % 8) * 75, 400 + (deadWhite / 8) * 75, 75, 75);
+                            deadWhite++;
                         }
                         board[previous_y][previous_x].setPos_y(mouseYOnBoard);
                         board[previous_y][previous_x].setPos_x(mouseXOnBoard);
                         board[mouseYOnBoard][mouseXOnBoard] = board[previous_y][previous_x];
                         board[previous_y][previous_x] = nullPiece;
+                        drawBoard();
                         if (!player2.getPieces()[0].isLife())
                             System.out.println("플레이어1 승리");
+                        checkPromotion(board[mouseYOnBoard][mouseXOnBoard], mouseXOnBoard, mouseYOnBoard);
                         checkKing();
                         changeTurn(2);
                     }
@@ -390,14 +501,17 @@ public class MainMenu extends JFrame {
                         }
                         if (board[mouseYOnBoard][mouseXOnBoard].getTurn() == 1) {
                             board[mouseYOnBoard][mouseXOnBoard].setLife(false);
-                            p1bt[board[mouseYOnBoard][mouseXOnBoard].getNo()].setVisible(false);
+                            p1bt[board[mouseYOnBoard][mouseXOnBoard].getNo()].setBounds(670 + (deadBlack % 8) * 75, 200 + (deadBlack / 8) * 75, 75, 75);
+                            deadBlack++;
                         }
                         board[previous_y][previous_x].setPos_y(mouseYOnBoard);
                         board[previous_y][previous_x].setPos_x(mouseXOnBoard);
                         board[mouseYOnBoard][mouseXOnBoard] = board[previous_y][previous_x];
                         board[previous_y][previous_x] = nullPiece;
+                        drawBoard();
                         if(!player2.getPieces()[0].isLife())
                             System.out.println("플레이어2 승리");
+                        checkPromotion(board[mouseYOnBoard][mouseXOnBoard], mouseXOnBoard, mouseYOnBoard);
                         checkKing();
                         changeTurn(1);
                     }
@@ -425,12 +539,16 @@ public class MainMenu extends JFrame {
             p2bt[i].setFocusPainted(false);
         }
         add(boardLabel);
+
+
     }
 
     public void LocalGame() {
         player1 = new Player(p1.getName(), 1);
         player2 = new Player(p2.getName(), 2);
         turnPlayer = 1;
+        deadBlack= 0;
+        deadWhite = 0;
         changeTurn(1);
         setBoard();
         drawBoard();
@@ -452,13 +570,15 @@ public class MainMenu extends JFrame {
     public void changeTurn(int turn) {
         if (turn == 1) {
             for (int i = 0 ; i < 16 ; i++) {
-                p1bt[i].addNotify();
+                if (player1.getPieces()[i].isLife())
+                    p1bt[i].addNotify();
                 p2bt[i].removeNotify();
             }
             turnPlayer = 1;
         } else {
             for (int i = 0 ; i < 16 ; i++) {
-                p2bt[i].addNotify();
+                if (player2.getPieces()[i].isLife())
+                    p2bt[i].addNotify();
                 p1bt[i].removeNotify();
             }
             turnPlayer = 2;
@@ -475,7 +595,8 @@ public class MainMenu extends JFrame {
         };
         if (turnPlayer == 1) {
             for (int i = 0; i < 16; i++) {
-                if(movable(player1.getPieces()[i], player1.getPieces()[i].getPos_x(), player1.getPieces()[i].getPos_y(), player2.getPieces()[0].getPos_x(), player2.getPieces()[0].getPos_y())) {
+                if(player1.getPieces()[i].isLife() &&
+                        movable(player1.getPieces()[i], player1.getPieces()[i].getPos_x(), player1.getPieces()[i].getPos_y(), player2.getPieces()[0].getPos_x(), player2.getPieces()[0].getPos_y())) {
                     check.setVisible(true);
                     timer.schedule(timerTask, 1000);
                     break;
@@ -483,12 +604,40 @@ public class MainMenu extends JFrame {
             }
         } else {
             for (int i = 0; i < 16; i++) {
-                if(movable(player2.getPieces()[i], player2.getPieces()[i].getPos_x(), player2.getPieces()[i].getPos_y(), player1.getPieces()[0].getPos_x(), player1.getPieces()[0].getPos_y())) {
+                if(player2.getPieces()[i].isLife() &&
+                        movable(player2.getPieces()[i], player2.getPieces()[i].getPos_x(), player2.getPieces()[i].getPos_y(), player1.getPieces()[0].getPos_x(), player1.getPieces()[0].getPos_y())) {
                     check.setVisible(true);
                     timer.schedule(timerTask, 1000);
                     break;
                 }
             }
+        }
+    }
+
+    public void checkPromotion(Piece piece, int mouseXOnBoard, int mouseYOnBoard) {
+        if (piece.getName().equals("Pawn")) {
+            promX = mouseXOnBoard;
+            promY = mouseYOnBoard;
+            if (turnPlayer == 1 && mouseYOnBoard == 1) {
+                promotion.setVisible(true);
+                for (int i = 0 ; i < 4 ; i++) {
+                    p1prom[i].setVisible(true);
+                }
+                for (int i = 0 ; i< 16 ; i++)
+                {
+                    p1bt[i].removeNotify();
+                }
+            } else if (turnPlayer == 2 && mouseYOnBoard == 8) {
+                promotion.setVisible(true);
+                for (int i = 0 ; i < 4 ; i++) {
+                    p2prom[i].setVisible(true);
+                }
+                for (int i = 0 ; i< 16 ; i++)
+                {
+                    p2bt[i].removeNotify();
+                }
+            }
+
         }
     }
 
@@ -534,11 +683,11 @@ public class MainMenu extends JFrame {
             } else if (previous_y == mouseYOnBoard) {
                 if (previous_x < mouseXOnBoard) {
                     for (int i = previous_x + 1 ; i < mouseXOnBoard ; i++) {
-                        if (board[previous_x][i] != nullPiece) return false;
+                        if (board[previous_y][i] != nullPiece) return false;
                     }
                 } else {
                     for (int i = previous_x - 1 ; i > mouseXOnBoard ; i--) {
-                        if (board[previous_x][i] != nullPiece) return false;
+                        if (board[previous_y][i] != nullPiece) return false;
                     }
                 }
             } else if (previous_y - mouseYOnBoard == previous_x - mouseXOnBoard){
@@ -610,11 +759,11 @@ public class MainMenu extends JFrame {
             } else if (previous_y == mouseYOnBoard) {
                 if (previous_x < mouseXOnBoard) {
                     for (int i = previous_x + 1 ; i < mouseXOnBoard ; i++) {
-                        if (board[previous_x][i] != nullPiece) return false;
+                        if (board[previous_y][i] != nullPiece) return false;
                     }
                 } else {
                     for (int i = previous_x - 1 ; i > mouseXOnBoard ; i--) {
-                        if (board[previous_x][i] != nullPiece) return false;
+                        if (board[previous_y][i] != nullPiece) return false;
                     }
                 }
             } else return false;
@@ -635,7 +784,7 @@ public class MainMenu extends JFrame {
             } else if (turnPlayer == 2) {
                 if (previous_x == mouseXOnBoard && previous_y + 1 == mouseYOnBoard && board[previous_y + 1][previous_x] == nullPiece) return true;
                 if ((previous_x - 1 == mouseXOnBoard || previous_x + 1 == mouseXOnBoard) && previous_y + 1 == mouseYOnBoard &&
-                        board[mouseYOnBoard][mouseXOnBoard].getTurn() == 2) return true;
+                        board[mouseYOnBoard][mouseXOnBoard].getTurn() == 1) return true;
             }
             return false;
         }
