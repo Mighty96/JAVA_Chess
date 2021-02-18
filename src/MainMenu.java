@@ -460,6 +460,12 @@ public class MainMenu extends JFrame {
                         checkPromotion(board[mouseYOnBoard][mouseXOnBoard], mouseXOnBoard, mouseYOnBoard);
                         checkKing();
                         changeTurn(2);
+                    } else if (board[previous_y][previous_x].getName().equals("King") &&
+                    !board[previous_y][previous_x].isFirstMove() && previous_y == mouseYOnBoard &&
+                            (previous_x + 2 == mouseXOnBoard || previous_x - 2 == mouseXOnBoard)) {
+                        if (checkCastling(board[previous_y][previous_x], mouseXOnBoard, mouseYOnBoard)) {
+                            changeTurn(2);
+                        }
                     }
                     drawBoard();
                 }
@@ -514,6 +520,12 @@ public class MainMenu extends JFrame {
                         checkPromotion(board[mouseYOnBoard][mouseXOnBoard], mouseXOnBoard, mouseYOnBoard);
                         checkKing();
                         changeTurn(1);
+                    } else if (board[previous_y][previous_x].getName().equals("King") &&
+                            !board[previous_y][previous_x].isFirstMove() && previous_y == mouseYOnBoard &&
+                            (previous_x + 2 == mouseXOnBoard || previous_x - 2 == mouseXOnBoard)) {
+                        if (checkCastling(board[previous_y][previous_x], mouseXOnBoard, mouseYOnBoard)) {
+                            changeTurn(1);
+                        }
                     }
                     drawBoard();
                 }
@@ -638,6 +650,73 @@ public class MainMenu extends JFrame {
                 }
             }
 
+        }
+    }
+
+    public boolean checkCastling(Piece piece, int mouseXOnBoard, int mouseYOnBoard) {
+        if (mouseXOnBoard > piece.getPos_x()) {
+            if (board[mouseYOnBoard][8].isFirstMove())
+                return false;
+            for (int i = piece.getPos_x() + 1; i < 8; i++) {
+                if (board[mouseYOnBoard][i] != nullPiece)
+                    return false;
+            }
+            for (int i = piece.getPos_x() ; i <= piece.getPos_x() + 2 ; i++) {
+                for (int j = 0 ; j < 16 ; j++) {
+                    if (turnPlayer == 1) {
+                        if (player2.getPieces()[j].isLife() &&
+                                movable(player2.getPieces()[j], player2.getPieces()[j].getPos_x(),
+                                        player2.getPieces()[j].getPos_y(),i, mouseYOnBoard))
+                            return false;
+                    } else {
+                        if (player1.getPieces()[j].isLife() &&
+                                movable(player1.getPieces()[j], player1.getPieces()[j].getPos_x(),
+                                        player1.getPieces()[j].getPos_y(),i, mouseYOnBoard))
+                            return false;
+                    }
+                }
+            }
+            piece.setFirstMove(true);
+            board[mouseYOnBoard][8].setFirstMove(true);
+            piece.setPos_x(piece.getPos_x() + 2);
+            board[mouseYOnBoard][mouseXOnBoard] = piece;
+            board[mouseYOnBoard][mouseXOnBoard - 2] = nullPiece;
+            board[mouseYOnBoard][8].setPos_x(piece.getPos_x() - 1);
+            board[mouseYOnBoard][piece.getPos_x() - 1] = board[mouseYOnBoard][8];
+            board[mouseYOnBoard][8] = nullPiece;
+
+            return true;
+        } else {
+            if (board[mouseYOnBoard][1].isFirstMove())
+                return false;
+            for (int i = piece.getPos_x() - 1; i > 1; i--) {
+                if (board[mouseYOnBoard][i] != nullPiece)
+                    return false;
+            }
+            for (int i = piece.getPos_x() ; i >= piece.getPos_x() - 2 ; i--) {
+                for (int j = 0 ; j < 16 ; j++) {
+                    if (turnPlayer == 1) {
+                        if (player2.getPieces()[j].isLife() &&
+                                movable(player2.getPieces()[j], player2.getPieces()[j].getPos_x(),
+                                        player2.getPieces()[j].getPos_y(),i, mouseYOnBoard))
+                            return false;
+                    } else {
+                        if (player1.getPieces()[j].isLife() &&
+                                movable(player1.getPieces()[j], player1.getPieces()[j].getPos_x(),
+                                        player1.getPieces()[j].getPos_y(),i, mouseYOnBoard))
+                            return false;
+                    }
+                }
+            }
+            piece.setFirstMove(true);
+            board[mouseYOnBoard][1].setFirstMove(true);
+            piece.setPos_x(piece.getPos_x() - 2);
+            board[mouseYOnBoard][mouseXOnBoard] = piece;
+            board[mouseYOnBoard][mouseXOnBoard + 2] = nullPiece;
+            board[mouseYOnBoard][1].setPos_x(piece.getPos_x() + 1);
+            board[mouseYOnBoard][piece.getPos_x() + 1] = board[mouseYOnBoard][1];
+            board[mouseYOnBoard][1] = nullPiece;
+            return true;
         }
     }
 
